@@ -13,6 +13,12 @@ describe("Usernames", function() {
     return { user1, user2, user3, usernames }
   }
 
+  it("should be deployed", async function() {
+    const { usernames } = await loadFixture(deploy);
+
+    expect(usernames.target).to.be.properAddress;
+  });
+
   it("fine to set username", async function() {
     const { user1, usernames } = await loadFixture(deploy);
     await usernames.connect(user1).setUsername("User 1 name");

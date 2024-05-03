@@ -54,6 +54,15 @@ describe("MyToken", function() {
     }
   }
 
+  it("should be deployed", async function() {
+    const { unique_users, subscribers, super_users, tokens } = await loadFixture(deploy);
+
+    expect(unique_users.target).to.be.properAddress;
+    expect(subscribers.target).to.be.properAddress;
+    expect(super_users.target).to.be.properAddress;
+    expect(tokens.target).to.be.properAddress;
+  });
+
   it("fine to create token from super user", async function() {
     const { user1, tokens } = await loadFixture(deploy);
     await tokens.connect(user1).mint("first nft", "for me", "http://mipt.ru", false, user1.address);

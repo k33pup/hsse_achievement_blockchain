@@ -13,6 +13,12 @@ describe("UniqueUsers", function() {
     return { user1, user2, user3, unique_users }
   }
 
+  it("should be deployed", async function() {
+    const { unique_users } = await loadFixture(deploy);
+
+    expect(unique_users.target).to.be.properAddress;
+  });
+
   it("fine to call addCount from owner", async function() {
     const { user1, user2, unique_users } = await loadFixture(deploy);
     await expect(unique_users.deploymentTransaction()?.from).to.eq(user1.address);
