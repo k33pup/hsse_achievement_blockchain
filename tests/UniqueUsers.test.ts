@@ -24,6 +24,7 @@ describe("UniqueUsers", function() {
     await expect(unique_users.deploymentTransaction()?.from).to.eq(user1.address);
     await unique_users.connect(user1).addCount(user1.address);
     await expect(await unique_users.getUniqueUsersCnt()).to.eq(1);
+    await expect(await unique_users.canCall(user1.address)).to.eq(true);
   });
 
   it("fail to call addCount from others", async function() {

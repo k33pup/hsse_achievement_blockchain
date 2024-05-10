@@ -25,6 +25,7 @@ describe("Usernames", function() {
     await expect(await usernames.getOwner("User 1 name")).to.eq(user1.address);
     await expect(await usernames['hasUsername(address)'](user1.address)).to.eq(true);
     await expect(await usernames['getUsername(address)'](user1.address)).to.eq("User 1 name");
+    await expect(await usernames.connect(user1)['getUsername()']()).to.eq("User 1 name");
   });
 
   it("fail to create 2 same usernames", async function() {

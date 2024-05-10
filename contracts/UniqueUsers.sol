@@ -9,6 +9,7 @@ contract UniqueUsers {
   address private contact_owner_;
 
   constructor () {
+    can_call_[msg.sender] = true;
     contact_owner_ = msg.sender;
   }
 
