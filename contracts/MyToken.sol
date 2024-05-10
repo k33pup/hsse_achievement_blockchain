@@ -17,6 +17,7 @@ contract MyToken {
     string description;
     string baseURI;
     bool is_private;
+    address minter;
   }  
 
   constructor(address _sub, address _superUsers, address _uniqueUsers) {
@@ -71,7 +72,7 @@ contract MyToken {
       public enoughSubscribers(msg.sender) {
     total_token_id_++;
     Achievement memory new_achievement = Achievement(
-      total_token_id_, name_, description_, baseURI_, is_private
+      total_token_id_, name_, description_, baseURI_, is_private, msg.sender
     );
     safeMint(new_achievement, to_);
     unique_manager.addCount(msg.sender);

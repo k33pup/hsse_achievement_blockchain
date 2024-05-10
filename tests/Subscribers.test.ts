@@ -1,9 +1,8 @@
-import { CustomError } from "hardhat/internal/hardhat-network/stack-traces/model";
 import { loadFixture, ethers, expect } from "./setup";
 
 describe("Subscribers", function() {
   async function deploy() {
-    const [from_, to_, unique_users_owner] = await ethers.getSigners();
+    const [from_, to_] = await ethers.getSigners();
 
     const uniqueUsersFactory = await ethers.getContractFactory("UniqueUsers");
     const subscribersFactory = await ethers.getContractFactory("Subscribers");
