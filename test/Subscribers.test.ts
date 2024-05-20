@@ -45,7 +45,7 @@ describe("Subscribers", function() {
 
   it("Can't unsubscribe from not subscried on user", async function() {
     const { from_, to_, subscribers } = await loadFixture(deploy);
-    await expect(subscribers.connect(from_).unsubscribeFrom(to_)).to.be.rejectedWith("You're haven't been subscribed");
+    await expect(subscribers.connect(from_).unsubscribeFrom(to_)).to.be.rejectedWith("You haven't been subscribed");
   })
 
   it("After subscription", async function() {
