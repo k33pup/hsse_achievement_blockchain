@@ -136,7 +136,36 @@ describe("MyToken", function() {
     await tokens.connect(users[3]).mint("first nft", "for me", "http://mipt.ru", false, users[3].address);
     await tokens.connect(users[3]).burn(1);
     await expect(await tokens.getOwner(1)).to.eq(ethers.ZeroAddress);
-    await expect((await tokens.getAllAchievements(users[3])).length).to.eq(0);
+    await expect((await tokens['getAllAchievements(address)'](users[3])).length).to.eq(0);
+  });
+
+  it("fine to create public token and make it private", async function() {
+    const { user1, users, subscribers, tokens } = await loadFixture(deploy);
+
+    await subscribers.connect(user1).subscribeOn(users[3]);
+    await subscribers.connect(users[1]).subscribeOn(users[3]);
+    await subscribers.connect(users[2]).subscribeOn(user1);
+    await subscribers.connect(users[3]).subscribeOn(users[1]);
+
+    await tokens.connect(users[3]).mint("first nft", "for me", "http://mipt.ru", false, users[3].address);
+    await expect((await tokens.getAchievement(1)).is_private).to.eq(false);
+    await tokens.connect(users[3]).makePrivate(1);
+    await expect((await tokens.getAchievement(1)).is_private).to.eq(true);
+  });
+
+  it("fine to create public token and make it 2 times private", async function() {
+    const { user1, users, subscribers, tokens } = await loadFixture(deploy);
+
+    await subscribers.connect(user1).subscribeOn(users[3]);
+    await subscribers.connect(users[1]).subscribeOn(users[3]);
+    await subscribers.connect(users[2]).subscribeOn(user1);
+    await subscribers.connect(users[3]).subscribeOn(users[1]);
+
+    await tokens.connect(users[3]).mint("first nft", "for me", "http://mipt.ru", false, users[3].address);
+    await expect((await tokens.getAchievement(1)).is_private).to.eq(false);
+    await tokens.connect(users[3]).makePrivate(1);
+    await tokens.connect(users[3]).makePrivate(1);
+    await expect((await tokens.getAchievement(1)).is_private).to.eq(true);
   });
 
   it("fail to create token and burn 2 times it", async function() {
@@ -160,16 +189,37 @@ describe("MyToken", function() {
     await expect(tokens.connect(user1).transfer(1, users[4])).to.be.revertedWith("wrong owner of the token!");
   });
 
-  it("fine to get all user tokens", async function() {
+  it("fail to transfer to yourself", async function() {
+    const { user1, tokens } = await loadFixture(deploy);
+
+    await tokens.connect(user1).mint("first nft", "for me", "http://mipt.ru", false, user1.address);
+    await expect(tokens.connect(user1).transfer(1, user1.address)).to.be.revertedWith("you can't transfer to yourself!");
+  });
+
+  it("fine to get all user tokens by address", async function() {
     const { user1, users, tokens } = await loadFixture(deploy);
 
     await tokens.connect(user1).mint("first nft", "for him 1", "http://mipt.ru", false, users[0].address);
     await tokens.connect(user1).mint("second nft", "for him 2", "http://mipt.ru", false, users[0].address);
     await tokens.connect(user1).mint("third nft", "for him3", "http://mipt.ru", false, users[0].address);
     await tokens.connect(user1).mint("other nft", "for other", "http://mipt.ru", false, users[1].address);
-    await expect((await tokens.getAllAchievements(users[0])).length).to.eq(3);
-    await expect((await tokens.getAllAchievements(users[0])).at(0)?.at(1)).to.eq("first nft");
-    await expect((await tokens.getAllAchievements(users[0])).at(1)?.at(1)).to.eq("second nft");
-    await expect((await tokens.getAllAchievements(users[0])).at(2)?.at(1)).to.eq("third nft");
+    await expect((await tokens['getAllAchievements(address)'](users[0])).length).to.eq(3);
+    await expect((await tokens['getAllAchievements(address)'](users[0])).at(0)?.at(1)).to.eq("first nft");
+    await expect((await tokens['getAllAchievements(address)'](users[0])).at(1)?.at(1)).to.eq("second nft");
+    await expect((await tokens['getAllAchievements(address)'](users[0])).at(2)?.at(1)).to.eq("third nft");
+  });
+
+  it("fine to get all tokens by name", async function() {
+    const { user1, users, tokens } = await loadFixture(deploy);
+
+    await tokens.connect(user1).mint("first nft", "for him 1", "http://mipt.ru", false, users[0].address);
+    await tokens.connect(user1).mint("first nft", "for him 2", "http://mipt.ru", false, users[0].address);
+    await tokens.connect(user1).mint("first nft", "for him 3", "http://mipt.ru", false, users[0].address);
+    await tokens.connect(user1).mint("other nft", "for other", "http://mipt.ru", false, users[1].address);
+    await expect((await tokens['getAllAchievements(string)']("first nft")).length).to.eq(3);
+    await expect((await tokens['getAllAchievements(string)']("first nft")).at(0)?.at(2)).to.eq("for him 1");
+    await expect((await tokens['getAllAchievements(string)']("first nft")).at(1)?.at(2)).to.eq("for him 2");
+    await expect((await tokens['getAllAchievements(string)']("first nft")).at(2)?.at(2)).to.eq("for him 3");
+    await expect((await tokens['getAllAchievements(string)']("other nft")).length).to.eq(1);
   });
 });

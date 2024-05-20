@@ -51,6 +51,10 @@ contract MyToken {
     _;
   }
 
+  modifier validDestination(address from_, address to_) {
+    require(from_ != to_, "you can't transfer to yourself!");
+    _;
+  }
 
   event Minted(address indexed to_, uint256 indexed token_id_);
   event Transfered(address indexed from_, address indexed to_, uint256 indexed token_id_);
@@ -78,13 +82,27 @@ contract MyToken {
     unique_manager.addCount(msg.sender);
   }
 
-  function transfer(uint256 token_id_, address to_) 
-      public validToken(token_id_) isTokenOwner(token_id_, msg.sender) {
+  function transfer(uint256 token_id_, address to_) public 
+      validDestination(msg.sender, to_)
+      validToken(token_id_) 
+      isTokenOwner(token_id_, msg.sender) {
     safeTransfer(token_id_, to_);
   }
 
   function burn(uint256 token_id_) public {
     transfer(token_id_, address(0));
+  }
+
+  function makePrivate(uint256 token_id_) public
+      validToken(token_id_)
+      isTokenOwner(token_id_, msg.sender) {
+    achievements_[token_id_].is_private = true;
+  }
+
+  function makePublic(uint256 token_id_) public
+      validToken(token_id_)
+      isTokenOwner(token_id_, msg.sender) {
+    achievements_[token_id_].is_private = false;
   }
 
   function getAchievement(uint256 token_id) public view returns(Achievement memory) {
@@ -120,4 +138,22 @@ contract MyToken {
     }
     return result;
   } 
+
+  function getAllAchievements(string memory name_) public view returns(Achievement[] memory) {
+    uint256 cnt = 0;
+    for (uint256 i = 0; i <= total_token_id_; i++) {
+      if (keccak256(abi.encodePacked(achievements_[i].name)) == keccak256(abi.encodePacked(name_))) {
+        cnt += 1;
+      }
+    }
+    Achievement[] memory result = new Achievement[](cnt);
+    uint256 cur_index = 0;
+    for (uint256 i = 0; i <= total_token_id_; i++) {
+      if (keccak256(abi.encodePacked(achievements_[i].name)) == keccak256(abi.encodePacked(name_))) {
+        result[cur_index] = achievements_[i];
+        cur_index++;
+      }
+    }
+    return result;
+  }
 }
