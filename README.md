@@ -2,8 +2,17 @@
 
 This project demonstrates blockchain entities and some tests written using hardhat.
 
-MyToken contract is the simple adaptation of NFT.  
-Subscribers contract is the manager of subscriptions between users.  
-SuperUsers contract is the manager of superusers who can mint tokens without special conditions, plus starting decentralized voting for adding/removing superuser.  
-Usernames contract is the matcher between addresses and usernames.  
-UniqueUsers contract is the activity supervisor who count unique count of active users of the App.  
+* MyToken contract is the simple adaptation of NFT. You can mint your achievements, transfer and burn them.  
+* Subscribers contract is the manager of subscriptions between users. You can subscribe and unsubscribe from user.  
+* SuperUsers contract is the manager of superusers who can mint tokens without special conditions, plus starting decentralized voting for adding/removing superuser rights.  
+* Usernames contract is the matcher between addresses and usernames.  
+* UniqueUsers contract is the activity supervisor who has a count of active users of the App.  
+
+Deployment order:
+1. Usernames
+2. UniqueUsers
+3. Subscribers
+4. SuperUsers
+5. UniqueUsers.addTrusContracts([Subscribers, SuperUsers])
+6. MyToken
+7. UniqueUsers.addTrusContracts([MyToken])
