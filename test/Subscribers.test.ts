@@ -33,7 +33,7 @@ describe("Subscribers", function() {
 
   it("Can't subscribe/unsubscribe on yourself", async function () {
     const { from_, to_, subscribers } = await loadFixture(deploy);
-    await expect(subscribers.connect(to_).subscribeOn(to_)).to.be.rejectedWith("You can't subscribed on yourself!");
+    await expect(subscribers.connect(to_).subscribeOn(to_)).to.be.rejectedWith("You can't subscribe on yourself!");
     await expect(subscribers.connect(to_).unsubscribeFrom(to_)).to.be.rejectedWith("You can't unsubscribe from yourself!");
   });
 

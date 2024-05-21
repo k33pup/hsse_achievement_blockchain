@@ -42,7 +42,7 @@ contract Subscribers {
     }
 
     function subscribeOn(address to_) public {
-        require(msg.sender != to_, "You can't subscribed on yourself!");
+        require(msg.sender != to_, "You can't subscribe on yourself!");
         require(
             !isAlreadySubscriber(msg.sender, to_),
             "You're already subscribed"
